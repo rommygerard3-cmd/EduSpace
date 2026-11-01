@@ -1,29 +1,15 @@
 # ==========================================
-# ETAPE 1 : CONSTRUCTION DU FRONTEND
-# ==========================================
-
-FROM node:22-bookworm-slim AS frontend
-
-WORKDIR /app
-
-COPY package*.json ./
-
-RUN npm install --no-audit --no-fund
-
-COPY . .
-
-RUN npm run build
-
-
-# ==========================================
-# ETAPE 2 : ENVIRONNEMENT PHP
+# BASE PHP 8.3 + APACHE
 # ==========================================
 
 FROM php:8.3-apache
 
 WORKDIR /var/www/html
 
-# Installation des dépendances système
+# ==========================================
+# DEPENDANCES SYSTEME
+# ==========================================
+
 RUN apt-get update && apt-get install -y \
     git \
     unzip \
@@ -38,12 +24,14 @@ RUN apt-get update && apt-get install -y \
     libcurl4-openssl-dev \
     && rm -rf /var/lib/apt/lists/*
 
-# Configuration GD
+# ==========================================
+# EXTENSIONS PHP
+# ==========================================
+
 RUN docker-php-ext-configure gd \
     --with-freetype \
     --with-jpeg
 
-# Installation des extensions PHP
 RUN docker-php-ext-install -j$(nproc) \
     pdo_mysql \
     mbstring \
@@ -57,63 +45,50 @@ RUN docker-php-ext-install -j$(nproc) \
     xml \
     curl
 
-# Activation des modules Apache
-RUN a2enmod rewrite headers
-
 # ==========================================
-# CONFIGURATION APACHE
-# ==========================================
-
-# Laravel doit être servi depuis /public
-RUN sed -ri \
-    's!/var/www/html!/var/www/html/public!g' \
-    /etc/apache2/sites-available/*.conf
-
-# Configuration des permissions Apache
-RUN printf '<Directory /var/www/html/public>\n\
-    AllowOverride All\n\
-    Require all granted\n\
-</Directory>\n' >> /etc/apache2/apache2.conf
-
-# Configuration du port Render
-RUN sed -i 's/Listen 80/Listen 10000/' \
-    /etc/apache2/ports.conf \
-    && sed -i 's/<VirtualHost \*:80>/<VirtualHost *:10000>/' \
-    /etc/apache2/sites-available/000-default.conf
-
-EXPOSE 10000
-
-
-# ==========================================
-# INSTALLATION DE COMPOSER
+# COMPOSER
 # ==========================================
 
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
+# ==========================================
+# APACHE
+# ==========================================
+
+RUN a2enmod rewrite headers
+
+RUN sed -i 's/Listen 80/Listen 10000/' /etc/apache2/ports.conf
+
+RUN printf '<VirtualHost *:10000>\n\
+    DocumentRoot /var/www/html/public\n\
+    <Directory /var/www/html/public>\n\
+        AllowOverride All\n\
+        Require all granted\n\
+    </Directory>\n\
+    ErrorLog ${APACHE_LOG_DIR}/error.log\n\
+    CustomLog ${APACHE_LOG_DIR}/access.log combined\n\
+</VirtualHost>\n' > /etc/apache2/sites-available/000-default.conf
+
+EXPOSE 10000
 
 # ==========================================
-# COPIE DU PROJET LARAVEL
+# COPIE DU PROJET
 # ==========================================
 
 COPY . .
 
-# Installation des dépendances PHP
+# ==========================================
+# INSTALLATION LARAVEL
+# ==========================================
+
 RUN composer install \
     --no-dev \
     --optimize-autoloader \
     --no-interaction \
     --prefer-dist
 
-
 # ==========================================
-# COPIE DES FICHIERS VITE
-# ==========================================
-
-COPY --from=frontend /app/public/build ./public/build
-
-
-# ==========================================
-# PERMISSIONS LARAVEL
+# PERMISSIONS
 # ==========================================
 
 RUN mkdir -p \
@@ -125,9 +100,8 @@ RUN mkdir -p \
     && chown -R www-data:www-data storage bootstrap/cache \
     && chmod -R 775 storage bootstrap/cache
 
-
 # ==========================================
-# CONFIGURATION PRODUCTION
+# PRODUCTION
 # ==========================================
 
 ENV APP_ENV=production
