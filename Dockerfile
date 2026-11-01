@@ -1,5 +1,5 @@
 # Étape 1 : Compilation des ressources frontend
-FROM node:22-alpine AS frontend
+FROM node:22-bookworm-slim AS frontend
 
 WORKDIR /app
 
