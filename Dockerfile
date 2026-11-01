@@ -81,6 +81,10 @@ RUN mkdir -p storage/framework/cache \
     && chown -R www-data:www-data storage bootstrap/cache \
     && chmod -R 775 storage bootstrap/cache
 
-EXPOSE 80
+# Configuration du port Render
+RUN sed -i 's/Listen 80/Listen 10000/' /etc/apache2/ports.conf \
+    && sed -i 's/:80>/:10000>/' /etc/apache2/sites-available/000-default.conf
+
+EXPOSE 10000
 
 CMD ["apache2-foreground"]
