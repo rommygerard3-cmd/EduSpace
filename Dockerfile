@@ -23,6 +23,9 @@ RUN docker-php-ext-configure gd \
     --with-freetype \
     --with-jpeg
 
+RUN echo "display_errors=On" > /usr/local/etc/php/conf.d/errors.ini
+ENV LOG_CHANNEL=stderr
+
 RUN docker-php-ext-install -j$(nproc) \
     pdo_mysql \
     mbstring \
