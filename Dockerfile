@@ -1,14 +1,8 @@
-# ==========================================
-# BASE PHP 8.3 + APACHE
-# ==========================================
+
 
 FROM php:8.3-apache
 
 WORKDIR /var/www/html
-
-# ==========================================
-# DEPENDANCES SYSTEME
-# ==========================================
 
 RUN apt-get update && apt-get install -y \
     git \
@@ -23,10 +17,6 @@ RUN apt-get update && apt-get install -y \
     libxml2-dev \
     libcurl4-openssl-dev \
     && rm -rf /var/lib/apt/lists/*
-
-# ==========================================
-# EXTENSIONS PHP
-# ==========================================
 
 RUN docker-php-ext-configure gd \
     --with-freetype \
@@ -45,15 +35,7 @@ RUN docker-php-ext-install -j$(nproc) \
     xml \
     curl
 
-# ==========================================
-# COMPOSER
-# ==========================================
-
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
-
-# ==========================================
-# APACHE
-# ==========================================
 
 RUN a2enmod rewrite headers
 
@@ -71,26 +53,13 @@ RUN printf '<VirtualHost *:10000>\n\
 
 EXPOSE 10000
 
-# ==========================================
-# COPIE DU PROJET
-# ==========================================
-
 COPY . .
-
-# ==========================================
-# INSTALLATION LARAVEL
-# ==========================================
 
 RUN composer install \
     --no-dev \
     --optimize-autoloader \
     --no-interaction \
     --prefer-dist
-
-# ==========================================
-# PERMISSIONS
-# ==========================================
-
 RUN mkdir -p \
     storage/framework/cache \
     storage/framework/sessions \
@@ -99,10 +68,6 @@ RUN mkdir -p \
     bootstrap/cache \
     && chown -R www-data:www-data storage bootstrap/cache \
     && chmod -R 775 storage bootstrap/cache
-
-# ==========================================
-# PRODUCTION
-# ==========================================
 
 ENV APP_ENV=production
 
