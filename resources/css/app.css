@@ -1,0 +1,137 @@
+@import 'tailwindcss';
+
+@source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
+@source '../../storage/framework/views/*.php';
+
+@theme {
+    --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
+        'Segoe UI Symbol', 'Noto Color Emoji';
+}
+
+@layer base {
+    body {
+        @apply bg-slate-50 text-slate-800 antialiased;
+    }
+
+    h1 {
+        @apply text-2xl font-bold tracking-tight text-slate-900;
+    }
+
+    h2 {
+        @apply text-lg font-semibold text-slate-900;
+    }
+}
+
+@layer components {
+    .card {
+        @apply rounded-xl border border-slate-200 bg-white shadow-sm;
+    }
+
+    .card-body {
+        @apply p-5;
+    }
+
+    .btn {
+        @apply inline-flex items-center justify-center gap-2 rounded-lg px-4 py-2 text-sm font-semibold transition focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50;
+    }
+
+    .btn-primary {
+        @apply btn bg-blue-700 text-white hover:bg-blue-800 focus:ring-blue-500;
+    }
+
+    .btn-secondary {
+        @apply btn border border-slate-300 bg-white text-slate-700 hover:bg-slate-50 focus:ring-blue-500;
+    }
+
+    .btn-danger {
+        @apply btn bg-red-600 text-white hover:bg-red-700 focus:ring-red-500;
+    }
+
+    .btn-sm {
+        @apply px-3 py-1.5 text-xs;
+    }
+
+    .label {
+        @apply mb-1 block text-sm font-medium text-slate-700;
+    }
+
+    .input {
+        @apply block w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 shadow-sm outline-none transition placeholder:text-slate-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-200;
+    }
+
+    .table {
+        @apply min-w-full divide-y divide-slate-200 text-sm;
+    }
+
+    .table thead {
+        @apply bg-slate-50;
+    }
+
+    .table th {
+        @apply px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-500;
+    }
+
+    .table td {
+        @apply px-4 py-3 align-middle text-slate-700;
+    }
+
+    .table tbody tr {
+        @apply border-b border-slate-100 last:border-0 hover:bg-slate-50/70;
+    }
+
+    .badge {
+        @apply inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold;
+    }
+
+    .badge-blue {
+        @apply badge bg-blue-100 text-blue-800;
+    }
+
+    .badge-green {
+        @apply badge bg-emerald-100 text-emerald-800;
+    }
+
+    .badge-amber {
+        @apply badge bg-amber-100 text-amber-800;
+    }
+
+    .badge-red {
+        @apply badge bg-red-100 text-red-800;
+    }
+
+    .badge-slate {
+        @apply badge bg-slate-100 text-slate-700;
+    }
+
+    .nav-link {
+        @apply flex items-center rounded-lg px-3 py-2 text-sm font-medium text-slate-600 transition hover:bg-blue-50 hover:text-blue-800;
+    }
+
+    .nav-link-active {
+        @apply bg-blue-700 text-white hover:bg-blue-700 hover:text-white;
+    }
+
+    .stat-value {
+        @apply text-2xl font-bold text-slate-900;
+    }
+
+    .stat-label {
+        @apply text-xs font-medium uppercase tracking-wide text-slate-500;
+    }
+
+    .alert {
+        @apply rounded-lg border px-4 py-3 text-sm;
+    }
+
+    .alert-success {
+        @apply alert border-emerald-200 bg-emerald-50 text-emerald-800;
+    }
+
+    .alert-error {
+        @apply alert border-red-200 bg-red-50 text-red-800;
+    }
+
+    .alert-warning {
+        @apply alert border-amber-200 bg-amber-50 text-amber-800;
+    }
+}
